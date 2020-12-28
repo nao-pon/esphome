@@ -2,7 +2,7 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import i2c, sensor
 from esphome.const import CONF_ID, ICON_RADIATOR, UNIT_PARTS_PER_MILLION, \
-    UNIT_PARTS_PER_BILLION, CONF_TEMPERATURE, CONF_HUMIDITY, ICON_MOLECULE_CO2
+    UNIT_PARTS_PER_BILLION, CONF_TEMPERATURE, CONF_HUMIDITY, ICON_MOLECULE_CO2, ICON_SCALE
 
 DEPENDENCIES = ['i2c']
 
@@ -12,12 +12,14 @@ CCS811Component = ccs811_ns.class_('CCS811Component', cg.PollingComponent, i2c.I
 CONF_ECO2 = 'eco2'
 CONF_TVOC = 'tvoc'
 CONF_BASELINE = 'baseline'
+CONF_CUR_BASELINE = 'cur_baseline'
 
 CONFIG_SCHEMA = cv.Schema({
     cv.GenerateID(): cv.declare_id(CCS811Component),
     cv.Required(CONF_ECO2): sensor.sensor_schema(UNIT_PARTS_PER_MILLION, ICON_MOLECULE_CO2,
                                                  0),
     cv.Required(CONF_TVOC): sensor.sensor_schema(UNIT_PARTS_PER_BILLION, ICON_RADIATOR, 0),
+    cv.Required(CONF_CUR_BASELINE): sensor.sensor_schema('', ICON_SCALE, 0),
 
     cv.Optional(CONF_BASELINE): cv.hex_uint16_t,
     cv.Optional(CONF_TEMPERATURE): cv.use_id(sensor.Sensor),
@@ -34,6 +36,8 @@ def to_code(config):
     cg.add(var.set_co2(sens))
     sens = yield sensor.new_sensor(config[CONF_TVOC])
     cg.add(var.set_tvoc(sens))
+    sens = yield sensor.new_sensor(config[CONF_CUR_BASELINE])
+    cg.add(var.set_cur_baseline(sens))
 
     if CONF_BASELINE in config:
         cg.add(var.set_baseline(config[CONF_BASELINE]))

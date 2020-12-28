@@ -80,6 +80,8 @@ void CCS811Component::update() {
     this->co2_->publish_state(co2);
   if (this->tvoc_ != nullptr)
     this->tvoc_->publish_state(tvoc);
+  if (this->cur_baseline_ != nullptr)
+    this->cur_baseline_->publish_state(baseline);
 
   this->status_clear_warning();
 
@@ -113,6 +115,7 @@ void CCS811Component::dump_config() {
   LOG_UPDATE_INTERVAL(this)
   LOG_SENSOR("  ", "CO2 Sensor", this->co2_)
   LOG_SENSOR("  ", "TVOC Sensor", this->tvoc_)
+  LOG_SENSOR("  ", "Current Baseline", this->cur_baseline_)
   if (this->baseline_) {
     ESP_LOGCONFIG(TAG, "  Baseline: %04X", *this->baseline_);
   } else {
